@@ -53,7 +53,8 @@ func generate(plugin *protogen.Plugin, f *protogen.File) {
 		string(f.GoPackageName)+"clio",
 		path.Base(generatedFilenamePrefixToSlash)+".clio.go",
 	)
-	genConnectPackage = protogen.GoImportPath("github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect")
+	connectPath := path.Join(string(f.GoImportPath), string(f.GoPackageName)+"connect")
+	genConnectPackage = protogen.GoImportPath(connectPath)
 	gf := plugin.NewGeneratedFile(filepath, f.GoImportPath)
 
 	generatePreamble(gf, f)

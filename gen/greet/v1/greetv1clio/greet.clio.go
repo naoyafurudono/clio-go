@@ -7,7 +7,7 @@ package greetv1clio
 import (
 	context "context"
 	clio_go "github.com/naoyafurudono/clio-go"
-	greetv1connect "github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect"
+	greetv1connect "github.com/naoyafurudono/clio-go/gen/greet/v1/greetv1connect"
 	cobra "github.com/spf13/cobra"
 )
 
