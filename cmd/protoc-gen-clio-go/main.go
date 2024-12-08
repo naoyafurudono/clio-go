@@ -46,9 +46,8 @@ func generate(plugin *protogen.Plugin, f *protogen.File) {
 	filepath := path.Join(
 		path.Dir(generatedFilenamePrefixToSlash),
 		// パッケージ専用のディレクトリを掘る
-		string(f.GoPackageName),
-		path.Base(generatedFilenamePrefixToSlash),
-		"clio.go",
+		string(f.GoPackageName)+"clio",
+		path.Base(generatedFilenamePrefixToSlash)+"clio.go",
 	)
 	fmt.Fprint(os.Stderr, filepath)
 	gf := plugin.NewGeneratedFile(filepath, f.GoImportPath)
