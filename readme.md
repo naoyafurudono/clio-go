@@ -1,6 +1,6 @@
 # clio-go
 
-A protoc plugin to generate command line interface for a Connect service.
+Clio (\[klaɪoʊ\], クライオー) is a protoc plugin to generate command line interface for Connect services.
 
 ## sample
 
@@ -46,5 +46,5 @@ go install github.com/naoyafurudono/clio-go/cmd/protoc-gen-clio-go@latest
 #### install `colio-go` library
 
 ```sh
-go get github.com/naoyafurudono/clio-go
+go get github.com/naoyafurudono/clio-go@latest
 ```
