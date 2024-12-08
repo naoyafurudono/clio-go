@@ -14,7 +14,7 @@ const (
 	contextPackage        = protogen.GoImportPath("context")
 	greetv1ConnectPackage = protogen.GoImportPath("github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect")
 	cobraPackage          = protogen.GoImportPath("github.com/spf13/cobra")
-	clioPackage           = protogen.GoImportPath("github.com/naoyafurudono/clio")
+	clioPackage           = protogen.GoImportPath("github.com/naoyafurudono/clio-go")
 
 	usage   = `todo`
 	version = "0.0.1"
@@ -92,8 +92,9 @@ func generateCobraCommand(g *protogen.GeneratedFile, varName, use, short, long s
 	g.P("}")
 }
 
-func generateClioCommand(g *protogen.GeneratedFile, varName, use, short, long string) {
+func generateClioCommand(g *protogen.GeneratedFile, varName, methodName, use, short, long string) {
 	g.P("var "+varName+"=", g.QualifiedGoIdent(clioPackage.Ident("RpcCommand"))+"(ctx,")
+	g.P("s." + methodName + ",")
 	g.P(use + ",")
 	g.P(long + ",")
 	g.P(short + ",")
@@ -114,18 +115,18 @@ func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
 		sig := cmdSignature(g, service.GoName)
 		g.P(sig, " {")
 
-		serviceCommandName := service.GoName
-		generateCobraCommand(g, serviceCommandName, serviceCommandName, cts(service.Comments.Leading.String()), cts(service.Comments.Leading.String()))
-		// todo generate parent command
+		serviceCommandName := strings.ToLower(service.GoName)
+		generateCobraCommand(g, serviceCommandName, strLit(serviceCommandName), cts(service.Comments.Leading.String()), cts(service.Comments.Leading.String()))
 		g.P(fmt.Sprintf(`var reqData *string = %s.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")`, serviceCommandName))
 
 		var children = make([]string, 0, len(service.Methods))
 		for _, method := range service.Methods {
-			rpcName := method.GoName
-			generateClioCommand(g, rpcName, rpcName, cts(method.Comments.Leading.String()), cts(method.Comments.Leading.String()))
+			rpcName := strings.ToLower(method.GoName)
+			generateClioCommand(g, rpcName, method.GoName, strLit(rpcName), cts(method.Comments.Leading.String()), cts(method.Comments.Leading.String()))
 			children = append(children, rpcName)
 		}
 		generateAddCommand(g, serviceCommandName, children)
+		g.P("return &"+ serviceCommandName)
 		g.P("}")
 	}
 }
@@ -133,6 +134,10 @@ func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
 // comment to string
 func cts(c string) string {
 	return fmt.Sprintf(`"%s"`, strings.Trim(c, " /\n"))
+}
+
+func strLit(s string) string {
+	return fmt.Sprintf(`"%s"`, s)
 }
 
 // 	g.P(`import (

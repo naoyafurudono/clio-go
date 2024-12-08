@@ -6,32 +6,35 @@ package greetv1clio
 
 import (
 	context "context"
-	clio "github.com/naoyafurudono/clio"
+	clio_go "github.com/naoyafurudono/clio-go"
 	greetv1connect "github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect"
 	cobra "github.com/spf13/cobra"
 )
 
 func NewGreetServiceCommand(ctx context.Context, s greetv1connect.GreetServiceHandler) *cobra.Command {
-	var GreetService = cobra.Command{
-		Use:   GreetService,
+	var greetservice = cobra.Command{
+		Use:   "greetservice",
 		Long:  "Important service.",
 		Short: "Important service.",
 	}
-	var reqData *string = greetService.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")
-	var Hello = clio.RpcCommand(ctx,
-		Hello,
+	var reqData *string = greetservice.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")
+	var hello = clio_go.RpcCommand(ctx,
+		s.Hello,
+		"hello",
 		"basic greeting",
 		"basic greeting",
 		reqData,
 	)
-	var Thanks = clio.RpcCommand(ctx,
-		Thanks,
+	var thanks = clio_go.RpcCommand(ctx,
+		s.Thanks,
+		"thanks",
 		"you cannot live alone",
 		"you cannot live alone",
 		reqData,
 	)
-	GreetService.AddCommand(
-		Hello,
-		Thanks,
+	greetservice.AddCommand(
+		hello,
+		thanks,
 	)
+	return &greetservice
 }
