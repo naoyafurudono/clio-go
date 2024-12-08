@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
 
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -40,7 +42,16 @@ func main() {
 }
 
 func generate(plugin *protogen.Plugin, f *protogen.File) {
-	gf := plugin.NewGeneratedFile(f.GeneratedFilenamePrefix+"clio.go", f.GoImportPath)
+	generatedFilenamePrefixToSlash := filepath.ToSlash(f.GeneratedFilenamePrefix)
+	filepath := path.Join(
+		path.Dir(generatedFilenamePrefixToSlash),
+		// パッケージ専用のディレクトリを掘る
+		string(f.GoPackageName),
+		path.Base(generatedFilenamePrefixToSlash),
+		"clio.go",
+	)
+	fmt.Fprint(os.Stderr, filepath)
+	gf := plugin.NewGeneratedFile(filepath, f.GoImportPath)
 
 	generatePreamble(gf, f)
 	generateBody(gf, f)
@@ -55,7 +66,7 @@ func generatePreamble(g *protogen.GeneratedFile, file *protogen.File) {
 		g.P("// Source: ", file.Desc.Path())
 	}
 	g.P()
-	g.P("package ", file.GoPackageName)
+	g.P("package ", file.GoPackageName+"clio")
 	g.P()
 
 }

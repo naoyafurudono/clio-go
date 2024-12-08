@@ -2,7 +2,7 @@
 //
 // Source: greet/v1/greet.proto
 
-package greetv1
+package greetv1clio
 
 import (
 	"context"
