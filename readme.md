@@ -30,14 +30,14 @@ go install github.com/naoyafurudono/clio-go/cmd/protoc-gen-clio-go@latest
 #### setup your `buf.gen.yaml`
 
 ```diff
-version: v2
-plugins:
-  - local: protoc-gen-go
-    out: gen
-    opt: paths=source_relative
-  - local: protoc-gen-connect-go
-    out: gen
-    opt: paths=source_relative
+  version: v2
+  plugins:
+    - local: protoc-gen-go
+      out: gen
+      opt: paths=source_relative
+    - local: protoc-gen-connect-go
+      out: gen
+      opt: paths=source_relative
 +   - local: protoc-gen-clio-go
 +     out: gen
 +     opt: paths=source_relative
