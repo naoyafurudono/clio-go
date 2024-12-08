@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ioPackage = protogen.GoImportPath("io")
+	ioPackage      = protogen.GoImportPath("io")
 	contextPackage = protogen.GoImportPath("context")
 	cobraPackage   = protogen.GoImportPath("github.com/spf13/cobra")
 	clioPackage    = protogen.GoImportPath("github.com/naoyafurudono/clio-go")
@@ -81,7 +81,8 @@ func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
 		g.P(sig, " {")
 
 		serviceCommandName := strings.ToLower(service.GoName)
-		generateCobraCommand(g, serviceCommandName, strLit(serviceCommandName), cts(service.Comments.Leading.String()), cts(service.Comments.Leading.String()))
+		serviceName, _ := strings.CutSuffix(serviceCommandName, "service")
+		generateCobraCommand(g, serviceCommandName, strLit(serviceName), cts(service.Comments.Leading.String()), cts(service.Comments.Leading.String()))
 		g.P(fmt.Sprintf(`var reqData *string = %s.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")`, serviceCommandName))
 
 		var children = make([]string, 0, len(service.Methods))
@@ -136,7 +137,6 @@ func generateAddCommand(g *protogen.GeneratedFile, parentCommandName string, chi
 	}
 	g.P(")")
 }
-
 
 // comment to string
 func cts(c string) string {
