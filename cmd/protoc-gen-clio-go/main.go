@@ -11,14 +11,15 @@ import (
 )
 
 const (
-	contextPackage        = protogen.GoImportPath("context")
-	greetv1ConnectPackage = protogen.GoImportPath("github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect")
-	cobraPackage          = protogen.GoImportPath("github.com/spf13/cobra")
-	clioPackage           = protogen.GoImportPath("github.com/naoyafurudono/clio-go")
+	contextPackage = protogen.GoImportPath("context")
+	cobraPackage   = protogen.GoImportPath("github.com/spf13/cobra")
+	clioPackage    = protogen.GoImportPath("github.com/naoyafurudono/clio-go")
 
 	usage   = `todo`
 	version = "0.0.1"
 )
+
+var genConnectPackage protogen.GoImportPath
 
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
@@ -52,6 +53,7 @@ func generate(plugin *protogen.Plugin, f *protogen.File) {
 		string(f.GoPackageName)+"clio",
 		path.Base(generatedFilenamePrefixToSlash)+".clio.go",
 	)
+	genConnectPackage = protogen.GoImportPath("github.com/naoyafurudono/proto-cli/gen/greet/v1/greetv1connect")
 	gf := plugin.NewGeneratedFile(filepath, f.GoImportPath)
 
 	generatePreamble(gf, f)
@@ -79,8 +81,8 @@ func cmdSignature(g *protogen.GeneratedFile, serviceName string) string {
 	connectServerName := fmt.Sprintf("%sHandler", serviceName)
 	return fmt.Sprintf("func %s(ctx %s, s %s) *%s",
 		cmdName, // function name
-		g.QualifiedGoIdent(contextPackage.Ident("Context")), // first param type
-		g.QualifiedGoIdent(greetv1ConnectPackage.Ident(connectServerName)), // second param type
+		g.QualifiedGoIdent(contextPackage.Ident("Context")),            // first param type
+		g.QualifiedGoIdent(genConnectPackage.Ident(connectServerName)), // second param type
 		g.QualifiedGoIdent(cobraPackage.Ident("Command")),
 	)
 }
