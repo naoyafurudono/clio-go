@@ -1,6 +1,5 @@
 package clio
 
-
 import (
 	"context"
 	"encoding/json"
