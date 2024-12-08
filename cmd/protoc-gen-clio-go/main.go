@@ -117,7 +117,7 @@ func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
 		serviceCommandName := service.GoName
 		generateCobraCommand(g, serviceCommandName, serviceCommandName, cts(service.Comments.Leading.String()), cts(service.Comments.Leading.String()))
 		// todo generate parent command
-		g.P(fmt.Sprintf(`var reqData *string = %s.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")`), serviceCommandName)
+		g.P(fmt.Sprintf(`var reqData *string = %s.PersistentFlags().StringP("data", "d", "{}", "request message represented as a JSON")`, serviceCommandName))
 
 		var children = make([]string, 0, len(service.Methods))
 		for _, method := range service.Methods {
