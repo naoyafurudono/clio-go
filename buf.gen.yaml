@@ -6,5 +6,6 @@ plugins:
   - local: protoc-gen-connect-go
     out: gen
     opt: paths=source_relative
-  - local: protoc-gen-doc
-    out: doc
+  - local: protoc-gen-clio-go
+    out: gen
+    opt: paths=source_relative
