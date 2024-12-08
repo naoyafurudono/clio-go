@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package greet.v1;
+
+option go_package = "github.com/naoyafurudono/clio-go/gen/greet/v1;greetv1";
+
+// Important service.
+service GreetService {
+  // basic greeting
+  rpc Hello(HelloRequest) returns (HelloResponse) {}
+  // you cannot live alone
+  rpc Thanks(ThanksRequest) returns (ThanksResponse) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string greeting = 1;
+}
+
+message ThanksRequest {
+  string name = 1;
+  string why = 2;
+}
+
+message ThanksResponse {
+  string greeting = 1;
+}
