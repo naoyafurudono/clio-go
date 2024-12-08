@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	ioPackage = protogen.GoImportPath("io")
 	contextPackage = protogen.GoImportPath("context")
 	cobraPackage   = protogen.GoImportPath("github.com/spf13/cobra")
 	clioPackage    = protogen.GoImportPath("github.com/naoyafurudono/clio-go")
@@ -72,46 +73,6 @@ func generatePreamble(g *protogen.GeneratedFile, file *protogen.File) {
 	g.P()
 	g.P("package ", file.GoPackageName+"clio")
 	g.P()
-
-}
-
-func cmdSignature(g *protogen.GeneratedFile, serviceName string) string {
-	cmdName := fmt.Sprintf("New%sCommand", serviceName)
-	// XXX: depends on connect implementation
-	// see https://github.com/connectrpc/connect-go/blob/d55ebd843cc062404c2171354ddfe96da0346e4b/cmd/protoc-gen-connect-go/main.go#L637
-	connectServerName := fmt.Sprintf("%sHandler", serviceName)
-	return fmt.Sprintf("func %s(ctx %s, s %s) *%s",
-		cmdName, // function name
-		g.QualifiedGoIdent(contextPackage.Ident("Context")),            // first param type
-		g.QualifiedGoIdent(genConnectPackage.Ident(connectServerName)), // second param type
-		g.QualifiedGoIdent(cobraPackage.Ident("Command")),
-	)
-}
-
-func generateCobraCommand(g *protogen.GeneratedFile, varName, use, short, long string) {
-	g.P("var "+varName+"=", g.QualifiedGoIdent(cobraPackage.Ident("Command"))+"{")
-	g.P("Use: " + use + ",")
-	g.P("Long: " + long + ",")
-	g.P("Short: ", short+",")
-	g.P("}")
-}
-
-func generateClioCommand(g *protogen.GeneratedFile, varName, methodName, use, short, long string) {
-	g.P("var "+varName+"=", g.QualifiedGoIdent(clioPackage.Ident("RpcCommand"))+"(ctx,")
-	g.P("s." + methodName + ",")
-	g.P(use + ",")
-	g.P(long + ",")
-	g.P(short + ",")
-	g.P("reqData,")
-	g.P(")")
-}
-
-func generateAddCommand(g *protogen.GeneratedFile, parentCommandName string, children []string) {
-	g.P(parentCommandName + ".AddCommand(")
-	for _, child := range children {
-		g.P(child + ",")
-	}
-	g.P(")")
 }
 
 func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
@@ -134,6 +95,48 @@ func generateBody(g *protogen.GeneratedFile, f *protogen.File) {
 		g.P("}")
 	}
 }
+
+func cmdSignature(g *protogen.GeneratedFile, serviceName string) string {
+	cmdName := fmt.Sprintf("New%sCommand", serviceName)
+	// XXX: depends on connect implementation
+	// see https://github.com/connectrpc/connect-go/blob/d55ebd843cc062404c2171354ddfe96da0346e4b/cmd/protoc-gen-connect-go/main.go#L637
+	connectServerName := fmt.Sprintf("%sHandler", serviceName)
+	return fmt.Sprintf("func %s(ctx %s, s %s, w %s) *%s",
+		cmdName, // function name
+		g.QualifiedGoIdent(contextPackage.Ident("Context")),            // first param type
+		g.QualifiedGoIdent(genConnectPackage.Ident(connectServerName)), // second param type
+		g.QualifiedGoIdent(ioPackage.Ident("Writer")),
+		g.QualifiedGoIdent(cobraPackage.Ident("Command")),
+	)
+}
+
+func generateCobraCommand(g *protogen.GeneratedFile, varName, use, short, long string) {
+	g.P("var "+varName+"=", g.QualifiedGoIdent(cobraPackage.Ident("Command"))+"{")
+	g.P("Use: " + use + ",")
+	g.P("Long: " + long + ",")
+	g.P("Short: ", short+",")
+	g.P("}")
+}
+
+func generateClioCommand(g *protogen.GeneratedFile, varName, methodName, use, short, long string) {
+	g.P("var "+varName+"=", g.QualifiedGoIdent(clioPackage.Ident("RpcCommand"))+"(ctx,")
+	g.P("s." + methodName + ",")
+	g.P(use + ",")
+	g.P(long + ",")
+	g.P(short + ",")
+	g.P("reqData,")
+	g.P("w,")
+	g.P(")")
+}
+
+func generateAddCommand(g *protogen.GeneratedFile, parentCommandName string, children []string) {
+	g.P(parentCommandName + ".AddCommand(")
+	for _, child := range children {
+		g.P(child + ",")
+	}
+	g.P(")")
+}
+
 
 // comment to string
 func cts(c string) string {
