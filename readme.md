@@ -29,7 +29,7 @@ go install github.com/naoyafurudono/clio-go/cmd/protoc-gen-clio-go@latest
 
 #### setup your `buf.gen.yaml`
 
-```yaml
+```diff
 version: v2
 plugins:
   - local: protoc-gen-go
